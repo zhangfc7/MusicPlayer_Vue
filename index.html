@@ -1,0 +1,114 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta charset="utf-8">
+		<title>音乐播放器</title>
+		<link rel="stylesheet" type="text/css" href="index.css"/>
+		<link rel="stylesheet" type="text/css" href="https://www.layuicdn.com/layui/css/layui.css" />
+	</head>
+	<body>
+
+		<div id="main" class="layui-container">
+			<div id="app">
+
+				<div class="layui-form-item">
+					<div class="layui-input-inline">
+						<input v-model="query" v-on:keyup.enter="serachMusic" placeholder="请输入音乐名" autocomplete="off" class="layui-input">
+					</div>
+					<div class="layui-input-inline">
+						<button type="button" class="layui-btn" v-on:click="serachMusic">搜索</button>
+					</div>
+				</div>
+
+
+
+				<div class="layui-col-xs4 layui-col-sm4 layui-col-md3 musicListBox">
+					<ul>
+						<li v-for="item in musicList" v-on:click="playMusic(item.id)">
+							<i class="layui-icon layui-icon-play"></i>
+							{{ item.name }}
+							<hr>
+						</li>
+					</ul>
+				</div>
+				<div class="layui-col-xs4 layui-col-sm4 layui-col-md4 layui-col-md-offset1">
+					<img :src="musicPic" class="musicPic" />
+				</div>
+
+
+				<div class="layui-col-xs4 layui-col-sm4 layui-col-md3 layui-col-md-offset1 commentBox">
+					<div>
+						<fieldset class="layui-elem-field layui-field-title">
+						  <legend>热门评论</legend>
+						  <div class="layui-field-box">
+						    <dl v-for="item in hotComments">
+						    	<dt><img :src="item.user.avatarUrl" class="layui-nav-img user-img" /></dt>
+						    	<dd>{{item.user.nickname}}</dd>
+						    	<dd>{{item.content}}</dd>
+						    	<hr>
+						    </dl>
+						  </div>
+						</fieldset>
+						
+
+					</div>
+				</div>
+
+				<div class="layui-row">
+					<div class="layui-col-xs12 layui-col-sm12 layui-col-md12 layui-col-bg12">
+						<audio style="width: 100%;" ref="audio" :src="musicUrl" controls autoplay loop></audio>
+					</div>
+				</div>
+			</div>
+		</div>
+		<script src="https://unpkg.com/axios@0.19.2/dist/axios.min.js"></script>
+		<!-- 开发环境版本，包含了有帮助的命令行警告 -->
+		<script src="https://cdn.jsdelivr.net/npm/vue/dist/vue.js"></script>
+		<script>
+			var app = new Vue({
+				el: "#app",
+				data: {
+					query: '',
+					musicList: [],
+					musicUrl: '',
+					musicPic: '',
+					hotComments: []
+				},
+				methods: {
+					serachMusic: function() {
+						var that = this;
+						axios.get("https://autumnfish.cn/search?keywords=" + this.query).then(function(response) {
+							//console.log(response);
+							that.musicList = response.data.result.songs
+						}, function(error) {
+							console.log(error);
+						})
+					},
+					playMusic: function(musicId) {
+						var that = this;
+						axios.get("https://autumnfish.cn/song/url?id=" + musicId).then(function(response) {
+							//console.log(response.data.data[0].url);
+							that.musicUrl = response.data.data[0].url;
+						}, function(error) {
+							console.log(error);
+						})
+						//获取封面
+						axios.get("https://autumnfish.cn/song/detail?ids=" + musicId).then(function(response) {
+							//console.log(response.data.songs[0].al.picUrl);
+							that.musicPic = response.data.songs[0].al.picUrl
+						}, function(error) {
+							console.log(error);
+						})
+						//获取评论
+						axios.get("https://autumnfish.cn/comment/hot?type=0&id=" + musicId).then(function(response) {
+							console.log(response.data.hotComments);
+							that.hotComments = response.data.hotComments;
+						}, function(error) {
+							console.log(error);
+						})
+					}
+				}
+			})
+		</script>
+	</body>
+</html>

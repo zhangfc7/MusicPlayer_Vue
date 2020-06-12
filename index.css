@@ -1,0 +1,43 @@
+body {
+	background-image: url(login-bg.c64d8255.jpg);
+	width: auto;
+}
+
+#main {
+	background-color: aliceblue;
+	opacity: 0.9;
+}
+
+.musicPic {
+	width: 100%;
+	border-radius: 50%;
+	-webkit-transform: rotate(360deg);
+	animation: rotation 15s linear infinite;
+	-moz-animation: rotation 15s linear infinite;
+	-webkit-animation: rotation 15s linear infinite;
+	-o-animation: rotation 15s linear infinite;
+}
+
+@-webkit-keyframes rotation {
+	from {
+		-webkit-transform: rotate(0deg);
+	}
+
+	to {
+		-webkit-transform: rotate(360deg);
+	}
+}
+
+.commentBox {
+	height: 500px;
+	overflow: auto;
+}
+
+.musicListBox{
+	height: 500px;
+	overflow: auto;
+}
+
+.user-img{
+	float: left;
+}
